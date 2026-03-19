@@ -16,7 +16,10 @@ npx serve public
 Push to `main` → Vercel deploys automatically.
 
 ## TODO
-- [ ] Kobl email-capture til Supabase/Formspree
-- [ ] Integrer Cal.com booking-widget
+- [x] Kobl email-capture til Formspree
+- [x] Integrer Cal.com booking-widget
 - [ ] Tilslut linnetconsult.dk domæne i Vercel
 - [ ] Tilføj meta tags / OG image til LinkedIn-deling
+- [x] Erstat placeholder Cal.com booking-link
+- [x] Erstat placeholder Formspree form-ID
+- [x] Erstat placeholder email
