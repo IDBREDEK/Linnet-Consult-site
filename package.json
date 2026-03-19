@@ -1,0 +1,9 @@
+{
+  "name": "linnet-consult-site",
+  "version": "1.0.0",
+  "description": "Linnet Consult — Finansautomation for danske virksomheder",
+  "scripts": {
+    "dev": "npx serve public",
+    "build": "echo 'Static site — no build step needed'"
+  }
+}

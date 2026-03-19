@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linnet Consult — Finansautomation for danske virksomheder</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #0f1420;
+    --bg-card: #131a2b;
+    --bg-card-hover: #1a2338;
+    --border: #1e2a42;
+    --border-glow: #2a5cff22;
+    --text-primary: #e8ecf4;
+    --text-secondary: #7a8baa;
+    --text-muted: #4a5874;
+    --accent-blue: #3b7dff;
+    --accent-cyan: #00d4aa;
+    --accent-orange: #ff8c42;
+    --accent-purple: #a78bfa;
+    --accent-red: #ff5c5c;
+    --green-terminal: #00ff88;
+    --gradient-hero: linear-gradient(135deg, #3b7dff11, #00d4aa08, transparent);
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── Animated grid background ─── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(var(--border)1px, transparent 1px),
+      linear-gradient(90deg, var(--border)1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  .grid-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #3b7dff08, transparent);
+  }
+
+  /* ─── Scanline effect ─── */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      #00000008 2px,
+      #00000008 4px
+    );
+    pointer-events: none;
+  }
+
+  /* ─── Container ─── */
+  .container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─── Navigation ─── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 16px 0;
+    background: #0a0e17cc;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--accent-cyan); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+
+  .nav-cta {
+    background: var(--accent-blue);
+    color: white !important;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: #5090ff;
+    transform: translateY(-1px);
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(circle, #3b7dff15, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-cyan);
+    background: #00d4aa0a;
+    border: 1px solid #00d4aa22;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeInUp 0.6s ease;
+  }
+
+  .hero-badge .pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-cyan);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #00d4aa66; }
+    50% { opacity: 0.8; box-shadow: 0 0 0 6px #00d4aa00; }
+  }
+
+  .hero h1 {
+    font-size: clamp(36px, 5.5vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.6s ease 0.1s both;
+  }
+
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.6s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.6s ease 0.3s both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-primary {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover {
+    background: #5090ff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px #3b7dff33;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent-blue);
+    background: #3b7dff08;
+  }
+
+  /* ─── Terminal showcase ─── */
+  .terminal-showcase {
+    margin-top: 64px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease 0.4s both;
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #0c1019;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .terminal-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal-dot.red { background: #ff5f57; }
+  .terminal-dot.yellow { background: #ffbd2e; }
+  .terminal-dot.green { background: #28ca41; }
+
+  .terminal-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 8px;
+  }
+
+  .terminal-body {
+    padding: 24px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 2;
+    color: var(--text-secondary);
+  }
+
+  .terminal-body .cmd { color: var(--green-terminal); }
+  .terminal-body .flag { color: var(--accent-orange); }
+  .terminal-body .val { color: var(--accent-cyan); }
+  .terminal-body .comment { color: var(--text-muted); font-style: italic; }
+  .terminal-body .output { color: var(--text-primary); }
+  .terminal-body .success { color: var(--accent-cyan); }
+
+  /* ─── Section headers ─── */
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent-blue);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* ─── Products ─── */
+  .products {
+    padding: 120px 0;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--card-accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .product-card:hover {
+    border-color: #2a3a5a;
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+  }
+
+  .product-card:hover::before { opacity: 1; }
+
+  .product-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .product-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .product-card .mono-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .product-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .product-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .product-features li {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .product-features li::before {
+    content: '→';
+    color: var(--card-accent);
+    font-weight: bold;
+  }
+
+  .card-blue { --card-accent: var(--accent-blue); }
+  .card-cyan { --card-accent: var(--accent-cyan); }
+  .card-orange { --card-accent: var(--accent-orange); }
+  .card-purple { --card-accent: var(--accent-purple); }
+
+  /* ─── Stats ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* ─── Process ─── */
+  .process {
+    padding: 120px 0;
+  }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    margin-top: 56px;
+  }
+
+  .step {
+    position: relative;
+  }
+
+  .step-number {
+    font-family: var(--font-mono);
+    font-size: 64px;
+    font-weight: 700;
+    color: #1a2338;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ─── CTA section ─── */
+  .cta-section {
+    padding: 120px 0;
+  }
+
+  .cta-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: radial-gradient(circle at 50% 50%, #3b7dff08, transparent 50%);
+    pointer-events: none;
+  }
+
+  .cta-box h2 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .cta-box p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin-bottom: 32px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+
+  .cta-form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .cta-form input {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 14px 20px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cta-form input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .cta-form input:focus {
+    border-color: var(--accent-blue);
+  }
+
+  .cta-subtext {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    position: relative;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 0;
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .footer-left a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--text-secondary); }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #0a0e17dd;
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 480px;
+    width: 90%;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .modal h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .modal p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-form input,
+  .modal-form select,
+  .modal-form textarea {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .modal-form input:focus,
+  .modal-form select:focus,
+  .modal-form textarea:focus {
+    border-color: var(--accent-blue);
+  }
+
+  .modal-form select {
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .modal-form textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .modal-form select option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .process-steps { grid-template-columns: 1fr; gap: 32px; }
+    .cta-box { padding: 40px 24px; }
+    .cta-form { flex-direction: column; }
+    .footer-content { flex-direction: column; gap: 16px; text-align: center; }
+    .products-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="scanlines"></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="container">
+    <a href="#" class="logo">linnet<span>_</span>consult</a>
+    <ul class="nav-links">
+      <li><a href="#produkter">Produkter</a></li>
+      <li><a href="#proces">Sådan virker det</a></li>
+      <li><a href="#kontakt" class="nav-cta">Book en demo →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      Automatiserer danske finansafdelinger
+    </div>
+    <h1>
+      Stop med at drukne<br>
+      i <span class="gradient-text">manuelt arbejde.</span>
+    </h1>
+    <p class="hero-sub">
+      Linnet Consult bygger skarp finansautomation til danske SMV'er.
+      Rykkerflow, tidsregistrering, controlling og rapportering
+      — bygget af en der kender din hverdag.
+    </p>
+    <div class="hero-actions">
+      <a href="#kontakt" class="btn-primary" onclick="openModal(event)">Book gratis sparring →</a>
+      <a href="#produkter" class="btn-secondary">Se løsningerne ↓</a>
+    </div>
+
+    <!-- Terminal showcase -->
+    <div class="terminal-showcase">
+      <div class="terminal-bar">
+        <span class="terminal-dot red"></span>
+        <span class="terminal-dot yellow"></span>
+        <span class="terminal-dot green"></span>
+        <span class="terminal-title">linnet-cli — debtor-defender</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="cmd">$</span> debtor-defender <span class="flag">--scan</span> <span class="val">c5-export.csv</span></div>
+        <div><span class="comment"># Analyserer 847 åbne poster...</span></div>
+        <div><span class="output">⚡ 23 debitorer over forfald — 1.2M DKK i risiko</span></div>
+        <div><span class="output">📧 Rykker-sekvens genereret: 14 dansk / 9 engelsk</span></div>
+        <div><span class="success">✓ Klar til afsendelse. Tryk enter for at aktivere.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS ─── -->
+<div class="container">
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-value">80%</div>
+      <div class="stat-label">Mindre tid på rykker-opfølgning</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">C5</div>
+      <div class="stat-label">Direkte ERP-integration</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">14d</div>
+      <div class="stat-label">Fra behov til produktion</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">DK</div>
+      <div class="stat-label">Bygget til dansk lovgivning</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PRODUCTS ─── -->
+<section class="products" id="produkter">
+  <div class="container">
+    <div class="section-tag">// Produkter</div>
+    <h2 class="section-title">Løsninger der fjerner<br>det manuelle arbejde</h2>
+    <p class="section-desc">
+      Hvert produkt er født af en reel udfordring i en dansk finansafdeling
+      — og bygget til at køre fra dag ét.
+    </p>
+
+    <div class="products-grid">
+      <!-- Debtor Defender -->
+      <div class="product-card card-cyan" style="--card-accent: var(--accent-cyan);">
+        <div class="product-icon" style="background: #00d4aa15; color: var(--accent-cyan);">🛡️</div>
+        <h3>Debtor Defender</h3>
+        <div class="mono-label">Automatisk debitoropfølgning</div>
+        <p>
+          Importér din C5-debitorliste, og få genereret skræddersyede
+          rykkersekvenser på dansk og engelsk — med eskaleringslogik
+          og juridisk korrekt påkrav.
+        </p>
+        <ul class="product-features">
+          <li>C5 / BC / e-conomic import</li>
+          <li>Auto-genererede rykkere DK/EN</li>
+          <li>Aldersfordeling &amp; risikoanalyse</li>
+          <li>Påkrav klar til Bech-Bruun-niveau</li>
+        </ul>
+      </div>
+
+      <!-- Timer -->
+      <div class="product-card card-blue" style="--card-accent: var(--accent-blue);">
+        <div class="product-icon" style="background: #3b7dff15; color: var(--accent-blue);">⏱️</div>
+        <h3>Field Timer</h3>
+        <div class="mono-label">Tidsregistrering for teknikere</div>
+        <p>
+          Mobil-først tidsregistrering bygget til serviceteknikere i felten.
+          Projekt-kobling, godkendelsesflow og direkte C5-eksport
+          til bogføring.
+        </p>
+        <ul class="product-features">
+          <li>Mobil-optimeret registrering</li>
+          <li>Projekt- &amp; afdelingskobling</li>
+          <li>Godkendelsesworkflow</li>
+          <li>C5 eksport-integration</li>
+        </ul>
+      </div>
+
+      <!-- Finance Playbook -->
+      <div class="product-card card-orange" style="--card-accent: var(--accent-orange);">
+        <div class="product-icon" style="background: #ff8c4215; color: var(--accent-orange);">📊</div>
+        <h3>Finance Playbook</h3>
+        <div class="mono-label">Kurser &amp; controlling-templates</div>
+        <p>
+          Hands-on kurser i AI-drevet controlling for danske
+          økonomifolk. Inkl. færdige templates til rapportering,
+          budgetopfølgning og nøgletalsanalyse.
+        </p>
+        <ul class="product-features">
+          <li>AI i finansafdelingen (kursus)</li>
+          <li>Claude Code for controllere</li>
+          <li>Rapporteringstemplates</li>
+          <li>Controlling-setup guides</li>
+        </ul>
+      </div>
+
+      <!-- Consulting -->
+      <div class="product-card card-purple" style="--card-accent: var(--accent-purple);">
+        <div class="product-icon" style="background: #a78bfa15; color: var(--accent-purple);">⚙️</div>
+        <h3>Custom Automation</h3>
+        <div class="mono-label">Skræddersyet finansautomation</div>
+        <p>
+          Har du en manuel proces der æder tid? Jeg bygger en
+          løsning der passer præcis til jeres ERP, workflow og
+          forretningslogik — fra idé til produktion.
+        </p>
+        <ul class="product-features">
+          <li>Lønafstemning &amp; payroll-automation</li>
+          <li>Momsberegning &amp; VAT-flows</li>
+          <li>Board-rapportering i PowerPoint</li>
+          <li>WIP-beregning &amp; projektanalyse</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROCESS ─── -->
+<section class="process" id="proces">
+  <div class="container">
+    <div class="section-tag">// Processen</div>
+    <h2 class="section-title">Fra problem til produktion<br>på 2 uger</h2>
+    <p class="section-desc">
+      Ingen måneders kravspecifikation. Vi starter med det der gør ondt
+      — og bygger løsningen iterativt.
+    </p>
+
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-number">01</div>
+        <h3>Sparring & diagnose</h3>
+        <p>
+          Gratis 30 min. hvor vi identificerer jeres mest tidskrævende
+          manuelle processer og vurderer automationspotentialet.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-number">02</div>
+        <h3>Prototype på 5 dage</h3>
+        <p>
+          En fungerende prototype med jeres egne data — så I kan
+          mærke forskellen før I forpligter jer.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-number">03</div>
+        <h3>Levering & overdragelse</h3>
+        <p>
+          Færdig løsning med dokumentation, oplæring og
+          løbende support. Fast pris, ingen overraskelser.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section class="cta-section" id="kontakt">
+  <div class="container">
+    <div class="cta-box">
+      <div class="section-tag">// Kom i gang</div>
+      <h2>Klar til at automatisere<br>din finansafdeling?</h2>
+      <p>
+        Tilmeld dig nyhedsbrevet og få konkrete tips til finansautomation
+        — eller book en gratis sparring med det samme.
+      </p>
+      <div class="cta-form">
+        <input type="email" id="email-input" placeholder="din@email.dk">
+        <button class="btn-primary" onclick="submitEmail()">Tilmeld →</button>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="#" class="btn-secondary" onclick="openModal(event)" style="font-size: 14px; padding: 10px 24px;">
+          Eller book en gratis 30 min. sparring →
+        </a>
+      </div>
+      <div class="cta-subtext">Ingen spam. Kun indhold der sparer dig tid.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-left">
+        © 2026 <a href="#">Linnet Consult</a> · CVR 39138271 · Aarhus, Danmark
+      </div>
+      <ul class="footer-links">
+        <li><a href="/cdn-cgi/l/email-protection#b4d6c6ddd5daf4d8dddadad1c0d7dbdac7c1d8c09ad0df"><span class="__cf_email__" data-cfemail="bad8c8d3dbd4fad6d3d4d4dfced9d5d4c9cfd6ce94ded1">[email&#160;protected]</span></a></li>
+        <li><a href="https://linkedin.com" target="_blank">LinkedIn</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── BOOKING MODAL ─── -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h3>Book gratis sparring</h3>
+    <p>30 minutter hvor vi kigger på jeres største tidssluger i økonomiafdelingen.</p>
+    <div class="modal-form">
+      <input type="text" placeholder="Dit navn">
+      <input type="email" placeholder="E-mail">
+      <input type="text" placeholder="Virksomhed">
+      <select>
+        <option value="" disabled selected>Hvad handler det om?</option>
+        <option>Debitor-opfølgning</option>
+        <option>Tidsregistrering</option>
+        <option>Rapportering & controlling</option>
+        <option>Løn & payroll</option>
+        <option>Andet / ved ikke endnu</option>
+      </select>
+      <textarea placeholder="Kort beskrivelse (valgfrit)"></textarea>
+      <button class="btn-primary" onclick="submitBooking()" style="width: 100%; justify-content: center;">
+        Send forespørgsel →
+      </button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function openModal(e) {
+    e.preventDefault();
+    document.getElementById('bookingModal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('bookingModal').classList.remove('active');
+  }
+
+  document.getElementById('bookingModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  function submitEmail() {
+    const email = document.getElementById('email-input').value;
+    if (email && email.includes('@')) {
+      document.getElementById('email-input').value = '';
+      document.getElementById('email-input').placeholder = '✓ Tak! Du hører fra os.';
+      document.getElementById('email-input').style.borderColor = 'var(--accent-cyan)';
+    }
+  }
+
+  function submitBooking() {
+    closeModal();
+    // In production: send to backend/webhook
+    alert('Tak for din henvendelse! Du hører fra mig inden for 24 timer.');
+  }
+
+  // Smooth reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+ 
