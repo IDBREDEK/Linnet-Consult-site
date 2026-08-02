@@ -13,7 +13,7 @@ npx serve public
 ```
 
 ## Deployment
-Push to `main` → Vercel deploys automatically.
+Push to `master` → Vercel deploys automatically.
 
 ## TODO
 - [x] Kobl email-capture til Formspree
